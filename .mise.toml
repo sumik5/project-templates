@@ -1,0 +1,28 @@
+[tools]
+python = "3.13"
+uv = "latest"
+
+[env]
+UV_CACHE_DIR = ".uv-cache"
+ENVIRONMENT = "development"
+_.python.venv = { path = ".venv", create = true, python = "3.13" }
+
+# =========================================
+# Project Setup
+# =========================================
+
+[tasks.install]
+description = "Install production dependencies"
+run = "uv sync --no-dev"
+
+[tasks.install-dev]
+description = "Install all dependencies including development tools"
+run = "uv sync --all-extras"
+
+[tasks.lock]
+description = "Generate/update lock file"
+run = "uv lock"
+
+[tasks.lock-upgrade]
+description = "Upgrade all dependencies to latest compatible versions"
+run = "uv lock --upgrade"
