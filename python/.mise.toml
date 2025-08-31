@@ -1,6 +1,7 @@
 [tools]
 python = "3.13"
 uv = "latest"
+ruff = "latest"
 
 [env]
 UV_CACHE_DIR = ".uv-cache"
@@ -8,7 +9,15 @@ ENVIRONMENT = "development"
 _.python.venv = { path = ".venv", create = true, python = "3.13" }
 
 # =========================================
-# Project Setup
+# Default task
+# =========================================
+
+[tasks.activate]
+description = "Activate the virtual environment"
+run = "source .venv/bin/activate"
+
+# =========================================
+# uv
 # =========================================
 
 [tasks.install]
@@ -26,3 +35,11 @@ run = "uv lock"
 [tasks.lock-upgrade]
 description = "Upgrade all dependencies to latest compatible versions"
 run = "uv lock --upgrade"
+
+# =========================================
+# ruff
+# =========================================
+
+[tasks.format]
+description = "Format code with ruff"
+run = "ruff format . && ruff check . --fix"
