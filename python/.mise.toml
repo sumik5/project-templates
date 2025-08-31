@@ -2,6 +2,7 @@
 python = "3.13"
 uv = "latest"
 ruff = "latest"
+pre-commit = "latest"
 
 [env]
 UV_CACHE_DIR = ".uv-cache"
@@ -15,6 +16,10 @@ _.python.venv = { path = ".venv", create = true, python = "3.13" }
 [tasks.activate]
 description = "Activate the virtual environment"
 run = "source .venv/bin/activate"
+
+[tasks.pre-commit-install]
+description = "Install pre-commit hooks"
+run = "pre-commit install"
 
 # =========================================
 # uv
