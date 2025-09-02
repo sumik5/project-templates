@@ -25,6 +25,10 @@ run = "pre-commit install"
 # uv
 # =========================================
 
+[tasks.uv-init]
+description = "Initialize the project"
+run = "uv init"
+
 [tasks.install]
 description = "Install production dependencies"
 run = "uv sync --no-dev"
