@@ -1,0 +1,36 @@
+[tools]
+terraform = "1.13.2"
+pre-commit = "latest"
+tflint = "latest"
+trivy = "latest"
+
+[settings]
+experimental = true
+
+[tasks.setup]
+description = "Setup project"
+run = "mise install && pre-commit install"
+
+[tasks.all]
+description = "Execute all checks"
+depends = ["format", "validate","tflint", "trivy-fs", "trivy-config"]
+
+[tasks.format]
+description = "Format project"
+run = "terraform fmt -check -recursive ."
+
+[tasks.validate]
+description = "Validate project"
+run = "terraform validate"
+
+[tasks.tflint]
+description = "Test tflint"
+run = "tflint --init && tflint --recursive"
+
+[tasks.trivy-fs]
+description = "Test trivy filesystem"
+run = "trivy fs . -c .trivyconfig.yaml --ignorefile .trivyignore"
+
+[tasks.trivy-config]
+description = "Test trivy config"
+run = "trivy config . -c .trivyconfig.yaml -s MEDIUM --ignorefile .trivyignore"

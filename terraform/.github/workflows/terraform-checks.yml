@@ -1,0 +1,37 @@
+name: Terraform Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.4.0
+
+      - name: Install mise
+        run: |
+          curl https://mise.run | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Setup mise
+        run: |
+          mise install
+          mise trust
+          echo "$(mise bin-paths)" >> $GITHUB_PATH
+          echo "MISE_SHELL=zsh" >> $GITHUB_ENV
+
+      - name: Initialize Terraform
+        run: mise exec terraform@1.13.2 -- terraform init -backend=false
+
+      - name: Run all checks
+        run: mise run all
