@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "standalone",
   eslint: {
@@ -49,6 +50,7 @@ const nextConfig = {
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+
   async headers() {
     return [
       {
@@ -95,6 +97,6 @@ const nextConfig = {
       },
     ];
   },
-};
+} satisfies NextConfig;
 
 export default nextConfig;
