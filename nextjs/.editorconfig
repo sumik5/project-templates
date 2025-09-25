@@ -1,0 +1,55 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# 最上位の設定ファイルであることを示す
+root = true
+
+# すべてのファイルに適用されるルール
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# JavaScript/TypeScript固有の設定
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+max_line_length = 100
+
+# JSON固有の設定
+[*.json]
+indent_size = 2
+
+# YAML固有の設定
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown固有の設定
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# CSS/SCSS固有の設定
+[*.{css,scss,sass}]
+indent_size = 2
+
+# HTML固有の設定
+[*.html]
+indent_size = 2
+
+# 設定ファイル
+[.{gitignore,eslintrc,prettierrc}]
+indent_size = 2
+
+# パッケージ管理ファイル
+[{package.json,package-lock.json,yarn.lock}]
+indent_size = 2
+
+# Docker関連
+[{Dockerfile,docker-compose.yml}]
+indent_size = 2
+
+# 環境設定ファイル
+[.env*]
+insert_final_newline = false

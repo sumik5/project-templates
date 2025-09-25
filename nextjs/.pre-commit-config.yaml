@@ -1,0 +1,129 @@
+# Pre-commit設定ファイル
+# コミット前の自動品質チェック
+
+repos:
+  # 基本的なファイル整合性チェック
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace        # 行末の余分な空白を削除
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer         # ファイル末尾に改行を追加
+      - id: check-yaml                # YAML構文チェック
+      - id: check-json                # JSON構文チェック
+      - id: check-toml                # TOML構文チェック
+      - id: check-xml                 # XML構文チェック
+      - id: check-merge-conflict      # マージコンフリクトマーカーをチェック
+      - id: check-case-conflict       # ケースの衝突をチェック
+      - id: check-symlinks           # シンボリックリンクをチェック
+      - id: check-executables-have-shebangs  # 実行ファイルのシェバンをチェック
+      - id: mixed-line-ending        # 混在した改行コードをチェック
+        args: [--fix=lf]
+      - id: check-added-large-files   # 大きなファイルの追加をチェック
+        args: [--maxkb=1000]
+
+  # JavaScript/TypeScript整合性チェック
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-ast                 # Python ASTチェック（JSには適用されないがYAML等で有用）
+
+  # ESLintによるコード品質チェック
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: pnpm lint
+        language: system
+        files: \.(js|jsx|ts|tsx)$
+        pass_filenames: false
+        additional_dependencies: []
+
+  # TypeScript型チェック
+  - repo: local
+    hooks:
+      - id: typescript-check
+        name: TypeScript Check
+        entry: pnpm tsc --noEmit
+        language: system
+        files: \.(ts|tsx)$
+        pass_filenames: false
+        always_run: false
+
+  # テスト実行（変更されたファイルに関連するテストのみ）
+  - repo: local
+    hooks:
+      - id: vitest-related
+        name: Vitest (Related Tests)
+        entry: pnpm test --run --passWithNoTests
+        language: system
+        files: \.(js|jsx|ts|tsx)$
+        pass_filenames: false
+
+  # パッケージ依存関係チェック
+  - repo: local
+    hooks:
+      - id: package-lock-check
+        name: Package Lock Check
+        entry: bash -c 'if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile --dry-run; fi'
+        language: system
+        files: ^(package\.json|pnpm-lock\.yaml)$
+        pass_filenames: false
+
+  # Next.js ビルドチェック（軽量版）
+  - repo: local
+    hooks:
+      - id: nextjs-build-check
+        name: Next.js Build Check
+        entry: bash -c 'pnpm build > /dev/null 2>&1 || { echo "Build failed. Please fix build errors before committing."; exit 1; }'
+        language: system
+        files: \.(js|jsx|ts|tsx|json|css|scss|sass|less)$
+        pass_filenames: false
+        stages: [manual]  # 手動実行のみ（通常のコミットでは実行しない）
+
+  # セキュリティ脆弱性チェック
+  - repo: local
+    hooks:
+      - id: npm-audit
+        name: NPM Security Audit
+        entry: bash -c 'pnpm audit --audit-level high || { echo "High severity vulnerabilities found. Please run pnpm audit fix."; exit 1; }'
+        language: system
+        files: ^(package\.json|pnpm-lock\.yaml)$
+        pass_filenames: false
+        stages: [manual]  # 手動実行のみ
+
+# グローバル除外設定
+exclude: |
+  (?x)^(
+    \.next/.*|
+    node_modules/.*|
+    build/.*|
+    dist/.*|
+    \.vercel/.*|
+    \.turbo/.*|
+    storybook-static/.*|
+    coverage/.*|
+    \.cache/.*|
+    public/mockServiceWorker\.js|
+    .*\.log|
+    .*\.map
+  )$
+
+# パフォーマンス設定
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
+default_stages: [pre-commit]
+fail_fast: false
+minimum_pre_commit_version: 3.0.0
+
+# CI環境での設定
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: 'main'
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: monthly
+  skip: []
+  submodules: false

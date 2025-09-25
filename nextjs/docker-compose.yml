@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  # Next.js Application
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: nextjs-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # ホットリロード対応のためのボリュームマウント
+      - .:/app
+    environment:
+      - NODE_ENV=development
+    command: ["sh", "-c", "pnpm install && pnpm dev"]

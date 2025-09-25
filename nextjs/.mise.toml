@@ -1,0 +1,215 @@
+# mise configuration for Next.js project
+# Run `mise tasks` to see all available commands
+
+[tools]
+node = "24"
+pnpm = "latest"
+
+[env]
+NODE_ENV = "development"
+
+[tasks.help]
+description = "Show all available commands"
+run = "mise tasks"
+
+# ==================== Setup Commands ====================
+[tasks.setup]
+description = "Setup development environment"
+run = """
+#!/bin/bash
+echo "🚀 Setting up development environment..."
+
+# Install Node dependencies
+echo "📦 Installing dependencies..."
+pnpm install
+
+# Setup environment files
+echo "🔧 Setting up environment files..."
+cp -n .env.example .env.local 2>/dev/null || true
+
+# Install pre-commit
+echo "🪝 Installing pre-commit..."
+if ! command -v pre-commit &> /dev/null; then
+    echo "Installing pre-commit via pip..."
+    pip install pre-commit || pip3 install pre-commit || {
+        echo "⚠️  Please install pre-commit manually: https://pre-commit.com/#install"
+        echo "    brew install pre-commit (macOS)"
+        echo "    pip install pre-commit (Python)"
+    }
+fi
+
+# Setup pre-commit hooks
+if command -v pre-commit &> /dev/null; then
+    echo "🔗 Installing git hooks..."
+    pre-commit install
+    pre-commit install --hook-type commit-msg
+    echo "✅ Pre-commit hooks installed!"
+else
+    echo "⚠️  Pre-commit not found. Skipping hook installation."
+fi
+
+echo "✅ Setup complete! Run 'mise run dev' to start"
+"""
+
+[tasks.clean-setup]
+description = "Clean setup (remove node_modules and reinstall)"
+run = """
+#!/bin/bash
+echo "🧹 Cleaning and reinstalling..."
+rm -rf node_modules pnpm-lock.yaml package-lock.json yarn.lock
+pnpm install
+echo "✅ Clean setup complete!"
+"""
+
+# ==================== Development Commands ====================
+[tasks.dev]
+description = "Start development server"
+run = "pnpm dev"
+
+[tasks.build]
+description = "Build for production"
+run = "pnpm build"
+
+[tasks.start]
+description = "Start production server"
+run = "pnpm start"
+
+[tasks.preview]
+description = "Preview production build"
+run = """
+#!/bin/bash
+pnpm build && pnpm start
+"""
+
+# ==================== Testing Commands ====================
+[tasks.test]
+description = "Run tests"
+run = "pnpm test"
+
+[tasks.test-watch]
+description = "Run tests in watch mode"
+run = "pnpm test --watch"
+
+[tasks.test-ui]
+description = "Run tests with UI"
+run = "pnpm test:ui"
+
+[tasks.test-coverage]
+description = "Run tests with coverage"
+run = "pnpm coverage"
+
+[tasks.test-all]
+description = "Run all tests with coverage"
+run = """
+#!/bin/bash
+echo "🧪 Running all tests..."
+pnpm test --run
+pnpm coverage
+echo "✅ All tests complete!"
+"""
+
+# ==================== Code Quality Commands ====================
+[tasks.lint]
+description = "Run ESLint"
+run = "pnpm lint"
+
+[tasks.lint-fix]
+description = "Run ESLint with auto-fix"
+run = "pnpm lint --fix"
+
+[tasks.format]
+description = "Format code with Prettier"
+run = "pnpm prettier --write ."
+
+[tasks.type-check]
+description = "Run TypeScript type checking"
+run = "pnpm tsc --noEmit"
+
+[tasks.quality]
+description = "Run all code quality checks"
+run = """
+#!/bin/bash
+echo "🔍 Running code quality checks..."
+pnpm type-check
+pnpm lint
+echo "✅ Code quality checks complete!"
+"""
+
+[tasks.pre-commit]
+description = "Run pre-commit checks manually"
+run = """
+#!/bin/bash
+echo "🔍 Running pre-commit checks..."
+if command -v pre-commit &> /dev/null; then
+    pre-commit run --all-files
+else
+    echo "⚠️  pre-commit not installed. Running fallback checks..."
+    pnpm type-check
+    pnpm lint
+    pnpm test --run
+fi
+echo "✅ Pre-commit checks passed!"
+"""
+
+[tasks.pre-commit-install]
+description = "Install pre-commit hooks"
+run = """
+#!/bin/bash
+echo "🪝 Installing pre-commit..."
+if ! command -v pre-commit &> /dev/null; then
+    echo "Installing pre-commit..."
+    pip install pre-commit || pip3 install pre-commit || brew install pre-commit || {
+        echo "❌ Failed to install pre-commit automatically."
+        echo "Please install manually:"
+        echo "  macOS: brew install pre-commit"
+        echo "  Python: pip install pre-commit"
+        echo "  Ubuntu: apt install pre-commit"
+        exit 1
+    }
+fi
+pre-commit install
+pre-commit install --hook-type commit-msg
+echo "✅ Pre-commit hooks installed!"
+"""
+
+[tasks.pre-commit-update]
+description = "Update pre-commit hooks to latest versions"
+run = "pre-commit autoupdate"
+
+[tasks.pre-commit-uninstall]
+description = "Uninstall pre-commit hooks"
+run = """
+#!/bin/bash
+echo "🗑️ Uninstalling pre-commit hooks..."
+if command -v pre-commit &> /dev/null; then
+    pre-commit uninstall
+    pre-commit uninstall --hook-type commit-msg
+    pre-commit uninstall --hook-type pre-push
+    echo "✅ Pre-commit hooks uninstalled!"
+else
+    echo "⚠️  pre-commit is not installed."
+fi
+"""
+
+[tasks.pre-commit-clean]
+description = "Completely remove pre-commit (hooks and cache)"
+run = """
+#!/bin/bash
+echo "🧹 Completely removing pre-commit..."
+# Uninstall hooks
+if command -v pre-commit &> /dev/null; then
+    pre-commit uninstall 2>/dev/null || true
+    pre-commit uninstall --hook-type commit-msg 2>/dev/null || true
+    pre-commit uninstall --hook-type pre-push 2>/dev/null || true
+fi
+# Remove cache
+rm -rf ~/.cache/pre-commit 2>/dev/null || true
+# Remove config file
+rm -f .pre-commit-config.yaml 2>/dev/null || true
+echo "✅ Pre-commit completely removed!"
+"""
+
+# ==================== Bundle Analysis ====================
+[tasks.analyze]
+description = "Analyze bundle size"
+run = "ANALYZE=true pnpm build"

@@ -1,0 +1,12 @@
+# Robots.txt for Next.js Application
+User-agent: *
+Allow: /
+
+# Disallow sensitive directories
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /dashboard/
+
+# Sitemap location (update when sitemap is implemented)
+# Sitemap: https://yourdomain.com/sitemap.xml
