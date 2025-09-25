@@ -1,7 +1,8 @@
+import { Suspense } from "react";
+
+import { ContactForm } from "@/components/ContactForm";
 import { FeatureCard } from "@/components/FeatureCard";
 import { InteractiveCounter } from "@/components/InteractiveCounter";
-import { ContactForm } from "@/components/ContactForm";
-import { Suspense } from "react";
 
 export default function Home() {
   return (

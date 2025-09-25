@@ -38,6 +38,7 @@ export function InteractiveCounter({ initialCount = 0 }: InteractiveCounterProps
       <h3 className="text-lg font-semibold">React 19 Optimistic Updates</h3>
       <div className="flex items-center gap-4">
         <button
+          type="button"
           onClick={handleDecrement}
           className="rounded-lg bg-secondary px-4 py-2 text-secondary-foreground transition-colors hover:bg-secondary/80"
           aria-label="Decrement"
@@ -48,6 +49,7 @@ export function InteractiveCounter({ initialCount = 0 }: InteractiveCounterProps
           {optimisticCount}
         </span>
         <button
+          type="button"
           onClick={handleIncrement}
           className="rounded-lg bg-primary px-4 py-2 text-primary-foreground transition-colors hover:bg-primary/80"
           aria-label="Increment"

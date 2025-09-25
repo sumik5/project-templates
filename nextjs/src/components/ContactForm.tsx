@@ -1,7 +1,8 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
 import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+
 import { sendMessage } from "@/app/actions";
 
 function SubmitButton() {
@@ -19,7 +20,7 @@ function SubmitButton() {
 }
 
 export function ContactForm() {
-  const [state, formAction, isPending] = useActionState(sendMessage, {
+  const [state, formAction, _isPending] = useActionState(sendMessage, {
     message: "",
     success: false,
   });
