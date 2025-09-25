@@ -8,10 +8,9 @@ import prettierConfig from "eslint-config-prettier";
 import eslintPluginImportX from "eslint-plugin-import-x";
 import regexPlugin from "eslint-plugin-regexp";
 import security from "eslint-plugin-security";
+// import tailwind from "eslint-plugin-tailwindcss"; // Temporarily disabled - compatibility issues with Tailwind v4
 import globals from "globals";
 import tseslint from "typescript-eslint";
-
-import tailwind from "eslint-plugin-tailwindcss";
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -26,7 +25,10 @@ const config = tseslint.config(
       "postcss.config.js",
       "tailwind.config.js",
       "eslint.config.mjs",
-      "vitest.config.mts"
+      "vitest.config.mts",
+      "vitest.config.ts",
+      "next-env.d.ts",
+      "public/mockServiceWorker.js",
     ],
   },
   // Base
@@ -45,8 +47,8 @@ const config = tseslint.config(
   ...compat.plugins("react-compiler"),
   react.configs["recommended-type-checked"],
 
-  // Tailwind
-  ...tailwind.configs["flat/recommended"],
+  // Tailwind CSS - temporarily disabled due to v4 compatibility issues
+  // ...tailwind.configs["flat/recommended"],
 
   {
     linterOptions: {
@@ -112,7 +114,7 @@ const config = tseslint.config(
     },
   },
 
-  prettierConfig
+  prettierConfig,
 );
 
 export default config;

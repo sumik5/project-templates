@@ -122,15 +122,15 @@ run = "pnpm prettier --write ."
 description = "Run TypeScript type checking"
 run = "pnpm tsc --noEmit"
 
-[tasks.quality]
-description = "Run all code quality checks"
-run = """
-#!/bin/bash
-echo "🔍 Running code quality checks..."
-pnpm type-check
-pnpm lint
-echo "✅ Code quality checks complete!"
-"""
+[tasks.check-all]
+description = "Execute all checks"
+run = [
+  "pnpm lint --fix",
+  "pnpm prettier --write .",
+  "pnpm tsc --noEmit"
+]
+
+# ==================== pre-commit Commands ====================
 
 [tasks.pre-commit]
 description = "Run pre-commit checks manually"

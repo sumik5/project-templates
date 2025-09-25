@@ -6,27 +6,27 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: trailing-whitespace        # 行末の余分な空白を削除
+      - id: trailing-whitespace # 行末の余分な空白を削除
         args: [--markdown-linebreak-ext=md]
-      - id: end-of-file-fixer         # ファイル末尾に改行を追加
-      - id: check-yaml                # YAML構文チェック
-      - id: check-json                # JSON構文チェック
-      - id: check-toml                # TOML構文チェック
-      - id: check-xml                 # XML構文チェック
-      - id: check-merge-conflict      # マージコンフリクトマーカーをチェック
-      - id: check-case-conflict       # ケースの衝突をチェック
-      - id: check-symlinks           # シンボリックリンクをチェック
-      - id: check-executables-have-shebangs  # 実行ファイルのシェバンをチェック
-      - id: mixed-line-ending        # 混在した改行コードをチェック
+      - id: end-of-file-fixer # ファイル末尾に改行を追加
+      - id: check-yaml # YAML構文チェック
+      - id: check-json # JSON構文チェック
+      - id: check-toml # TOML構文チェック
+      - id: check-xml # XML構文チェック
+      - id: check-merge-conflict # マージコンフリクトマーカーをチェック
+      - id: check-case-conflict # ケースの衝突をチェック
+      - id: check-symlinks # シンボリックリンクをチェック
+      - id: check-executables-have-shebangs # 実行ファイルのシェバンをチェック
+      - id: mixed-line-ending # 混在した改行コードをチェック
         args: [--fix=lf]
-      - id: check-added-large-files   # 大きなファイルの追加をチェック
+      - id: check-added-large-files # 大きなファイルの追加をチェック
         args: [--maxkb=1000]
 
   # JavaScript/TypeScript整合性チェック
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: check-ast                 # Python ASTチェック（JSには適用されないがYAML等で有用）
+      - id: check-ast # Python ASTチェック（JSには適用されないがYAML等で有用）
 
   # ESLintによるコード品質チェック
   - repo: local
@@ -79,7 +79,7 @@ repos:
         language: system
         files: \.(js|jsx|ts|tsx|json|css|scss|sass|less)$
         pass_filenames: false
-        stages: [manual]  # 手動実行のみ（通常のコミットでは実行しない）
+        stages: [manual] # 手動実行のみ（通常のコミットでは実行しない）
 
   # セキュリティ脆弱性チェック
   - repo: local
@@ -90,7 +90,7 @@ repos:
         language: system
         files: ^(package\.json|pnpm-lock\.yaml)$
         pass_filenames: false
-        stages: [manual]  # 手動実行のみ
+        stages: [manual] # 手動実行のみ
 
 # グローバル除外設定
 exclude: |
@@ -122,8 +122,8 @@ ci:
 
     for more information, see https://pre-commit.ci
   autofix_prs: true
-  autoupdate_branch: 'main'
-  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_branch: "main"
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
   autoupdate_schedule: monthly
   skip: []
   submodules: false
