@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useOptimistic, startTransition } from "react";
+import { startTransition, useOptimistic, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface InteractiveCounterProps {
@@ -14,7 +15,7 @@ export function InteractiveCounter({ initialCount = 0 }: InteractiveCounterProps
   const [count, setCount] = useState(initialCount);
   const [optimisticCount, addOptimisticCount] = useOptimistic(
     count,
-    (state, amount: number) => state + amount
+    (state, amount: number) => state + amount,
   );
 
   const handleIncrement = () => {
@@ -51,25 +52,27 @@ export function InteractiveCounter({ initialCount = 0 }: InteractiveCounterProps
             </Badge>
           </div>
           <CardTitle className="text-lg">Optimistic Updates</CardTitle>
-          <CardDescription>
-            リアルタイムUI更新のデモ
-          </CardDescription>
+          <CardDescription>リアルタイムUI更新のデモ</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
           {/* Count Display */}
           <div className="relative">
             <div className="flex items-center justify-center">
-              <div className={cn(
-                "relative flex items-center justify-center w-20 h-20 rounded-full",
-                "bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/20",
-                "transition-all duration-300",
-                optimisticCount !== count && "scale-110 border-primary/40"
-              )}>
-                <span className={cn(
-                  "text-3xl font-bold tabular-nums transition-all duration-300",
-                  optimisticCount !== count && "text-primary"
-                )}>
+              <div
+                className={cn(
+                  "relative flex items-center justify-center w-20 h-20 rounded-full",
+                  "bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/20",
+                  "transition-all duration-300",
+                  optimisticCount !== count && "scale-110 border-primary/40",
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-3xl font-bold tabular-nums transition-all duration-300",
+                    optimisticCount !== count && "text-primary",
+                  )}
+                >
                   {optimisticCount}
                 </span>
 
@@ -98,22 +101,20 @@ export function InteractiveCounter({ initialCount = 0 }: InteractiveCounterProps
               className={cn(
                 "w-12 h-12 rounded-full text-xl font-bold",
                 "hover:scale-110 active:scale-95 transition-all duration-200",
-                "hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive"
+                "hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive",
               )}
               aria-label="Decrement counter"
             >
               −
             </Button>
-
             <div className="w-8" /> {/* Spacer */}
-
             <Button
               size="lg"
               onClick={handleIncrement}
               className={cn(
                 "w-12 h-12 rounded-full text-xl font-bold",
                 "hover:scale-110 active:scale-95 transition-all duration-200",
-                "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90",
               )}
               aria-label="Increment counter"
             >
@@ -123,15 +124,13 @@ export function InteractiveCounter({ initialCount = 0 }: InteractiveCounterProps
 
           {/* Status Indicator */}
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <div className={cn(
-              "w-2 h-2 rounded-full transition-all duration-300",
-              optimisticCount !== count
-                ? "bg-yellow-500 animate-pulse"
-                : "bg-green-500"
-            )} />
-            <span>
-              {optimisticCount !== count ? "同期中" : "同期済み"}
-            </span>
+            <div
+              className={cn(
+                "w-2 h-2 rounded-full transition-all duration-300",
+                optimisticCount !== count ? "bg-yellow-500 animate-pulse" : "bg-green-500",
+              )}
+            />
+            <span>{optimisticCount !== count ? "同期中" : "同期済み"}</span>
           </div>
         </CardContent>
       </Card>

@@ -4,13 +4,13 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { sendMessage } from "@/app/actions";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 function SubmitButton() {
@@ -21,10 +21,7 @@ function SubmitButton() {
       type="submit"
       disabled={pending}
       size="lg"
-      className={cn(
-        "w-full transition-all duration-300",
-        pending && "cursor-not-allowed"
-      )}
+      className={cn("w-full transition-all duration-300", pending && "cursor-not-allowed")}
     >
       {pending ? (
         <>
@@ -60,9 +57,7 @@ export function ContactForm() {
             </Badge>
           </div>
           <CardTitle className="text-lg">Contact Form</CardTitle>
-          <CardDescription>
-            React 19 Server Actionsで実装
-          </CardDescription>
+          <CardDescription>React 19 Server Actionsで実装</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -122,17 +117,21 @@ export function ContactForm() {
 
           {/* Status Message */}
           {state.message && (
-            <div className={cn(
-              "p-4 rounded-lg border transition-all duration-300 animate-in slide-in-from-top-2",
-              state.success
-                ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200"
-                : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
-            )}>
+            <div
+              className={cn(
+                "p-4 rounded-lg border transition-all duration-300 animate-in slide-in-from-top-2",
+                state.success
+                  ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200"
+                  : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200",
+              )}
+            >
               <div className="flex items-center gap-2">
-                <div className={cn(
-                  "w-2 h-2 rounded-full",
-                  state.success ? "bg-green-500" : "bg-red-500"
-                )} />
+                <div
+                  className={cn(
+                    "w-2 h-2 rounded-full",
+                    state.success ? "bg-green-500" : "bg-red-500",
+                  )}
+                />
                 <p className="text-sm font-medium">{state.message}</p>
               </div>
             </div>

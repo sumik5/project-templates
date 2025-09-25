@@ -75,9 +75,12 @@ const config = tseslint.config(
     rules: {
       ...eslintPluginImportX.flatConfigs.recommended.rules,
       ...eslintPluginImportX.flatConfigs.typescript.rules,
-      "import-x/no-unresolved": ["error", {
-        ignore: ["geist", "@/components/*", "@/app/*", "@/*"]
-      }],
+      "import-x/no-unresolved": [
+        "error",
+        {
+          ignore: ["geist", "@/components/*", "@/app/*", "@/*"],
+        },
+      ],
       "import-x/order": [
         "error",
         {

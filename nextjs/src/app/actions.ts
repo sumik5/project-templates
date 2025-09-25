@@ -5,10 +5,7 @@ interface FormState {
   success: boolean;
 }
 
-export async function sendMessage(
-  prevState: FormState,
-  formData: FormData
-): Promise<FormState> {
+export async function sendMessage(prevState: FormState, formData: FormData): Promise<FormState> {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const message = formData.get("message") as string;

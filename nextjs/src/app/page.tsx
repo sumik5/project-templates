@@ -1,11 +1,10 @@
 import { Suspense } from "react";
 
 import { ContactForm } from "@/components/ContactForm";
-import { FeatureCard } from "@/components/FeatureCard";
 import { InteractiveCounter } from "@/components/InteractiveCounter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
@@ -16,7 +15,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <div className="relative">
             {/* Background gradient effects */}
-            <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+            <div
+              className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+              aria-hidden="true"
+            >
               <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-secondary opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
             </div>
 
@@ -42,8 +44,8 @@ export default function Home() {
               </h1>
 
               <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-                最新機能を活用したモダンなテンプレート。TypeScript、Tailwind CSS、shadcn/uiで構築された
-                プロダクション対応のNext.jsアプリケーション。
+                最新機能を活用したモダンなテンプレート。TypeScript、Tailwind
+                CSS、shadcn/uiで構築された プロダクション対応のNext.jsアプリケーション。
               </p>
 
               <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -58,7 +60,10 @@ export default function Home() {
             </div>
 
             {/* Bottom gradient effect */}
-            <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
+            <div
+              className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+              aria-hidden="true"
+            >
               <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-secondary to-primary opacity-20 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" />
             </div>
           </div>
@@ -101,7 +106,8 @@ export default function Home() {
                   <CardTitle className="text-xl">Tailwind CSS v4</CardTitle>
                 </div>
                 <CardDescription className="text-base">
-                  最新のTailwind CSSで高速かつ美しいスタイリング。ユーティリティファーストのアプローチ。
+                  最新のTailwind
+                  CSSで高速かつ美しいスタイリング。ユーティリティファーストのアプローチ。
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -145,16 +151,16 @@ export default function Home() {
                     Optimistic Updates
                   </CardTitle>
                 </div>
-                <CardDescription>
-                  useOptimisticを使用したUX向上デモ
-                </CardDescription>
+                <CardDescription>useOptimisticを使用したUX向上デモ</CardDescription>
               </CardHeader>
               <CardContent>
-                <Suspense fallback={
-                  <div className="flex items-center justify-center p-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                  </div>
-                }>
+                <Suspense
+                  fallback={
+                    <div className="flex items-center justify-center p-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                    </div>
+                  }
+                >
                   <InteractiveCounter initialCount={0} />
                 </Suspense>
               </CardContent>
@@ -168,9 +174,7 @@ export default function Home() {
                     Server Actions
                   </CardTitle>
                 </div>
-                <CardDescription>
-                  フォーム送信をServer Actionsで実装
-                </CardDescription>
+                <CardDescription>フォーム送信をServer Actionsで実装</CardDescription>
               </CardHeader>
               <CardContent>
                 <ContactForm />
@@ -202,7 +206,8 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  デフォルトでServer Componentsを活用し、クライアントJSを削減。初期読み込み速度の向上。
+                  デフォルトでServer
+                  Componentsを活用し、クライアントJSを削減。初期読み込み速度の向上。
                 </CardDescription>
               </CardContent>
             </Card>
@@ -242,9 +247,7 @@ export default function Home() {
       <footer className="px-6 py-20 border-t lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Ready to get started?
-            </h3>
+            <h3 className="text-2xl font-bold text-foreground mb-4">Ready to get started?</h3>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
               このテンプレートを使って、最新のNext.jsとReact 19の機能を活用した
               プロダクション対応のアプリケーションを構築しましょう。
