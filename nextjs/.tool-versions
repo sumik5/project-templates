@@ -1,0 +1,8 @@
+# asdf version management file
+# This file works with both asdf and mise
+# Install plugins:
+#   asdf plugin add nodejs
+#   asdf plugin add pnpm
+
+nodejs 24.5.0
+pnpm latest

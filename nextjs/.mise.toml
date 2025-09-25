@@ -1,9 +1,6 @@
 # mise configuration for Next.js project
 # Run `mise tasks` to see all available commands
-
-[tools]
-node = "24"
-pnpm = "latest"
+# Note: Tool versions are defined in .tool-versions for compatibility with asdf
 
 [env]
 NODE_ENV = "development"
