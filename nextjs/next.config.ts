@@ -2,12 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: "standalone",
   eslint: {
     ignoreDuringBuilds: true,
   },
   env: {},
   experimental: {},
+  // App Router での static generation の設定
+  trailingSlash: false,
 
   // バンドル解析設定（ANALYZE=true時に有効化）
   ...(process.env.ANALYZE === "true" && {

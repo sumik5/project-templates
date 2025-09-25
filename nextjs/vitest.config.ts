@@ -54,10 +54,6 @@ export default defineConfig({
     testTimeout: 10000,
     hookTimeout: 10000,
 
-    // ウォッチモード設定
-    watch: false,
-    watchExclude: ["node_modules/**", ".next/**", "coverage/**"],
-
     // モック設定
     mockReset: true,
     clearMocks: true,
@@ -83,10 +79,4 @@ export default defineConfig({
     include: ["react", "react-dom"],
   },
 
-  // サーバー設定（ブラウザモードテスト用 - 将来的な拡張用）
-  server: {
-    deps: {
-      inline: ["@testing-library/react"],
-    },
-  },
 });
