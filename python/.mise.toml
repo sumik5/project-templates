@@ -37,25 +37,23 @@ description = "Generate coverage report"
 run = "pytest --cov=src --cov-report=html --cov-report=term"
 
 [tasks.format]
-description = "Format code with black and isort"
-run = [
-    "black src/ tests/",
-    "isort src/ tests/"
-]
+description = "Format code with ruff"
+run = "ruff format src/ tests/"
 
 [tasks."format:check"]
 description = "Check code formatting"
-run = [
-    "black --check src/ tests/",
-    "isort --check src/ tests/"
-]
+run = "ruff format --check src/ tests/"
 
 [tasks.lint]
 description = "Run linting checks"
 run = [
-    "flake8 src/ tests/",
+    "ruff check src/ tests/",
     "mypy src/"
 ]
+
+[tasks."lint:fix"]
+description = "Run linting and auto-fix issues"
+run = "ruff check --fix src/ tests/"
 
 [tasks.typecheck]
 description = "Run type checking with mypy"
