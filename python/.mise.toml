@@ -1,54 +1,77 @@
+[env]
+_.python.venv = { path = ".venv", create = true }
+
 [tools]
 python = "3.13"
-uv = "latest"
-ruff = "latest"
-pre-commit = "latest"
-
-[env]
-UV_CACHE_DIR = ".uv-cache"
-ENVIRONMENT = "development"
-_.python.venv = { path = ".venv", create = true, python = "3.13" }
-
-# =========================================
-# Default task
-# =========================================
-
-[tasks.activate]
-description = "Activate the virtual environment"
-run = "source .venv/bin/activate"
-
-[tasks.pre-commit-install]
-description = "Install pre-commit hooks"
-run = "pre-commit install"
-
-# =========================================
-# uv
-# =========================================
-
-[tasks.uv-init]
-description = "Initialize the project"
-run = "uv init"
 
 [tasks.install]
-description = "Install production dependencies"
-run = "uv sync --no-dev"
+description = "Install all dependencies including dev"
+run = "uv pip install -e .[dev]"
 
-[tasks.install-dev]
-description = "Install all dependencies including development tools"
-run = "uv sync --all-extras"
+[tasks.install-prod]
+description = "Install production dependencies only"
+run = "uv pip install ."
 
-[tasks.lock]
-description = "Generate/update lock file"
-run = "uv lock"
+[tasks.dev]
+description = "Run development server with hot reload"
+run = "uvicorn src.main:app --reload --host 0.0.0.0 --port 8080"
 
-[tasks.lock-upgrade]
-description = "Upgrade all dependencies to latest compatible versions"
-run = "uv lock --upgrade"
+[tasks.test]
+description = "Run all tests with coverage"
+run = "pytest"
 
-# =========================================
-# ruff
-# =========================================
+[tasks."test:unit"]
+description = "Run unit tests only"
+run = "pytest -m unit"
+
+[tasks."test:integration"]
+description = "Run integration tests only"
+run = "pytest -m integration"
+
+[tasks."test:watch"]
+description = "Run tests in watch mode"
+run = "pytest-watch"
+
+[tasks.coverage]
+description = "Generate coverage report"
+run = "pytest --cov=src --cov-report=html --cov-report=term"
 
 [tasks.format]
-description = "Format code with ruff"
-run = "ruff format . && ruff check . --fix"
+description = "Format code with black and isort"
+run = [
+    "black src/ tests/",
+    "isort src/ tests/"
+]
+
+[tasks."format:check"]
+description = "Check code formatting"
+run = [
+    "black --check src/ tests/",
+    "isort --check src/ tests/"
+]
+
+[tasks.lint]
+description = "Run linting checks"
+run = [
+    "flake8 src/ tests/",
+    "mypy src/"
+]
+
+[tasks.typecheck]
+description = "Run type checking with mypy"
+run = "mypy src/"
+
+[tasks.check]
+description = "Run all quality checks (format, lint, test)"
+depends = ["format:check", "lint", "test"]
+
+[tasks.build]
+description = "Build Docker image"
+run = "docker build -t notion-slack:local ."
+
+[tasks.clean]
+description = "Clean build artifacts and cache"
+run = """
+rm -rf build/ dist/ *.egg-info __pycache__ .pytest_cache .mypy_cache htmlcov .coverage
+find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+"""
