@@ -3,10 +3,25 @@ _.python.venv = { path = ".venv", create = true }
 
 [tools]
 python = "3.13"
+pre-commit = "latest"
+
+[hooks]
+# Install pre-commit hooks after mise install
+postinstall = """
+#!/usr/bin/env bash
+echo "Setting up pre-commit hooks..."
+uv pip install pre-commit
+pre-commit install
+echo "✓ Pre-commit hooks installed"
+"""
 
 [tasks.install]
-description = "Install all dependencies including dev"
-run = "uv pip install -e .[dev]"
+description = "Install all dependencies including dev and setup pre-commit"
+run = """
+uv pip install -e .[dev]
+uv pip install pre-commit
+pre-commit install
+"""
 
 [tasks.install-prod]
 description = "Install production dependencies only"
