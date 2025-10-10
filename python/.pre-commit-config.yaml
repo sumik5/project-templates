@@ -6,8 +6,9 @@ repos:
     # Run the linter.
     - id: ruff-check
       args: [ --fix ]
-    # Run the formatter.
+    # Run the formatter in check mode (detect but don't fix formatting issues).
     - id: ruff-format
+      args: [ --check ]
 
 # Run tests before commit
 - repo: local
