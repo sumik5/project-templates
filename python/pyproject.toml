@@ -59,6 +59,8 @@ markers = [
     "skip_ci: Skip in CI environment",
 ]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
 
 # Coverage configuration
 [tool.coverage.run]
