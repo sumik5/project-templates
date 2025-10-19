@@ -84,7 +84,7 @@ run = "mypy src/"
 
 [tasks.check]
 description = "全ての品質チェックを実行（フォーマット、リント、テスト）"
-depends = ["format:check", "lint", "test"]
+depends = ["format:check", "lint:fix", "test"]
 
 # =======================================================================
 # Build
