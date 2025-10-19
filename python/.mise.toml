@@ -1,90 +1,112 @@
+# Settings
+[settings]
+experimental = true
+
+# Environment variables
 [env]
 _.python.venv = { path = ".venv", create = true }
 
+# Tools configuration
 [tools]
 python = "3.13"
 pre-commit = "latest"
 
+# Hooks
 [hooks]
-# Install pre-commit hooks after mise install
-postinstall = """
-#!/usr/bin/env bash
-echo "Setting up pre-commit hooks..."
-uv pip install pre-commit
-pre-commit install
-echo "✓ Pre-commit hooks installed"
-"""
+postinstall = "uv pip install -e .[dev] && pre-commit install"
 
+# =======================================================================
+# Project Setup
+# =======================================================================
+
+# Installation tasks
 [tasks.install]
-description = "Install all dependencies including dev and setup pre-commit"
-run = """
-uv pip install -e .[dev]
-uv pip install pre-commit
-pre-commit install
-"""
+description = "開発用依存関係とpre-commitフックをインストール"
+run = "uv pip install -e .[dev] && pre-commit install"
 
-[tasks.install-prod]
-description = "Install production dependencies only"
+[tasks."install-prod"]
+description = "本番用依存関係のみをインストール"
 run = "uv pip install ."
 
+# Development server
 [tasks.dev]
-description = "Run development server with hot reload"
-run = "uvicorn src.main:app --reload --host 0.0.0.0 --port 8080"
+description = "開発サーバーを起動"
+run = "python -m src.main"
 
+# =======================================================================
+# Test
+# =======================================================================
+
+# Testing tasks
 [tasks.test]
-description = "Run all tests with coverage"
+description = "全てのテストを実行"
 run = "pytest"
 
 [tasks."test:unit"]
-description = "Run unit tests only"
+description = "ユニットテストのみを実行"
 run = "pytest -m unit"
 
 [tasks."test:integration"]
-description = "Run integration tests only"
+description = "統合テストのみを実行"
 run = "pytest -m integration"
 
-[tasks."test:watch"]
-description = "Run tests in watch mode"
-run = "pytest-watch"
-
 [tasks.coverage]
-description = "Generate coverage report"
+description = "カバレッジレポート付きでテストを実行"
 run = "pytest --cov=src --cov-report=html --cov-report=term"
 
+# =======================================================================
+# Linter
+# =======================================================================
+
+# Code quality tasks
 [tasks.format]
-description = "Format code with ruff"
+description = "ruffでコードをフォーマット"
 run = "ruff format src/ tests/"
 
 [tasks."format:check"]
-description = "Check code formatting"
+description = "コードフォーマットをチェック"
 run = "ruff format --check src/ tests/"
 
 [tasks.lint]
-description = "Run linting checks"
-run = [
-    "ruff check src/ tests/",
-    "mypy src/"
-]
+description = "リントチェックを実行"
+run = """
+ruff check src/ tests/
+mypy src/
+"""
 
 [tasks."lint:fix"]
-description = "Run linting and auto-fix issues"
+description = "リント問題を自動修正"
 run = "ruff check --fix src/ tests/"
 
 [tasks.typecheck]
-description = "Run type checking with mypy"
+description = "mypyで型チェックを実行"
 run = "mypy src/"
 
 [tasks.check]
-description = "Run all quality checks (format, lint, test)"
+description = "全ての品質チェックを実行（フォーマット、リント、テスト）"
 depends = ["format:check", "lint", "test"]
 
-[tasks.build]
-description = "Build Docker image"
-run = "docker build -t notion-slack:local ."
+# =======================================================================
+# Build
+# =======================================================================
 
+# Build tasks
+#[tasks.build]
+#description = "Dockerイメージをビルド"
+#run = "docker build -t image:local ."
+
+
+# Cleanup tasks
 [tasks.clean]
-description = "Clean build artifacts and cache"
+description = "ビルド成果物とキャッシュをクリーンアップ"
 run = """
-rm -rf build/ dist/ *.egg-info __pycache__ .pytest_cache .mypy_cache htmlcov .coverage
-find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+rm -rf build/
+rm -rf dist/
+rm -rf *.egg-info
+rm -rf .pytest_cache
+rm -rf .ruff_cache
+rm -rf .mypy_cache
+rm -rf htmlcov/
+rm -rf .coverage
+find . -type d -name __pycache__ -exec rm -rf {} +
 """
