@@ -1,96 +1,152 @@
-# Pre-commit設定ファイル
-# コミット前の自動品質チェック
+# Pre-commit hooks for Next.js project
+# このファイルはNext.jsプロジェクトのコード品質を自動的にチェックします
+#
+# 🚀 セットアップ: mise run install
+# 🔍 手動実行: pre-commit run --all-files
+#
+# 💡 ディレクトリに依存しない設計:
+#   - git rev-parse --show-toplevelを使用して、どのディレクトリからcommitしても動作
+#   - プロジェクトルートに自動的に移動してコマンド実行
 
 repos:
-  # 基本的なファイル整合性チェック
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
-      - id: trailing-whitespace # 行末の余分な空白を削除
-        args: [--markdown-linebreak-ext=md]
-      - id: end-of-file-fixer # ファイル末尾に改行を追加
-      - id: check-yaml # YAML構文チェック
-      - id: check-json # JSON構文チェック
-      - id: check-toml # TOML構文チェック
-      - id: check-xml # XML構文チェック
-      - id: check-merge-conflict # マージコンフリクトマーカーをチェック
-      - id: check-case-conflict # ケースの衝突をチェック
-      - id: check-symlinks # シンボリックリンクをチェック
-      - id: check-executables-have-shebangs # 実行ファイルのシェバンをチェック
-      - id: mixed-line-ending # 混在した改行コードをチェック
-        args: [--fix=lf]
-      - id: check-added-large-files # 大きなファイルの追加をチェック
-        args: [--maxkb=1000]
-
-  # JavaScript/TypeScript整合性チェック
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
-      - id: check-ast # Python ASTチェック（JSには適用されないがYAML等で有用）
-
-  # ESLintによるコード品質チェック
+  # Next.js用のローカルフック
   - repo: local
     hooks:
-      - id: eslint
-        name: ESLint
-        entry: pnpm lint
+      # Prettier - コードフォーマット
+      - id: prettier
+        name: prettier
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)" && pnpm fmt'
         language: system
-        files: \.(js|jsx|ts|tsx)$
+        types_or: [javascript, jsx, ts, tsx, json, yaml, markdown, css]
         pass_filenames: false
-        additional_dependencies: []
 
-  # TypeScript型チェック
-  - repo: local
-    hooks:
+      # ESLint - JavaScript/TypeScriptの静的解析
+      - id: eslint
+        name: eslint
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)" && pnpm lint'
+        language: system
+        types_or: [javascript, jsx, ts, tsx]
+        pass_filenames: false
+
+      # TypeScript型チェック
       - id: typescript-check
         name: TypeScript Check
-        entry: pnpm tsc --noEmit
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)" && pnpm tsc --noEmit'
         language: system
         files: \.(ts|tsx)$
         pass_filenames: false
-        always_run: false
 
-  # テスト実行（変更されたファイルに関連するテストのみ）
-  - repo: local
-    hooks:
-      - id: vitest-related
-        name: Vitest (Related Tests)
-        entry: pnpm test --run --passWithNoTests
+      # Vitest - テスト実行
+      - id: vitest
+        name: vitest
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)" && pnpm test'
         language: system
-        files: \.(js|jsx|ts|tsx)$
+        types_or: [javascript, jsx, ts, tsx]
         pass_filenames: false
 
-  # パッケージ依存関係チェック
-  - repo: local
-    hooks:
+      # パッケージ依存関係チェック
       - id: package-lock-check
         name: Package Lock Check
-        entry: bash -c 'if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile --dry-run; fi'
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)" && if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile --dry-run; fi'
         language: system
         files: ^(package\.json|pnpm-lock\.yaml)$
         pass_filenames: false
 
-  # Next.js ビルドチェック（軽量版）
-  - repo: local
+  # 汎用フック（プロジェクト全体）
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-      - id: nextjs-build-check
-        name: Next.js Build Check
-        entry: bash -c 'pnpm build > /dev/null 2>&1 || { echo "Build failed. Please fix build errors before committing."; exit 1; }'
-        language: system
-        files: \.(js|jsx|ts|tsx|json|css|scss|sass|less)$
-        pass_filenames: false
-        stages: [manual] # 手動実行のみ（通常のコミットでは実行しない）
+      # 末尾の空白を削除
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
 
-  # セキュリティ脆弱性チェック
+      # ファイル末尾に改行を追加
+      - id: end-of-file-fixer
+
+      # YAMLファイルの構文チェック
+      - id: check-yaml
+
+      # JSONファイルの構文チェック
+      - id: check-json
+
+      # TOMLファイルの構文チェック
+      - id: check-toml
+
+      # マージコンフリクトマーカーのチェック
+      - id: check-merge-conflict
+
+      # ケースの衝突をチェック
+      - id: check-case-conflict
+
+      # シンボリックリンクをチェック
+      - id: check-symlinks
+
+      # 実行可能ファイルのシェバンをチェック
+      - id: check-executables-have-shebangs
+
+      # 混在した改行コードをチェック
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+      # 大きなファイルの追加をチェック（1MB以上）
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+
+  # ================================================================
+  # 📦 Docker品質チェック
+  # ================================================================
+  # Dockerfileやdocker-compose.ymlの品質をチェック（全フォルダ対象）
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      # Hadolint - Dockerfileのlint（全フォルダ対象）
+      - id: hadolint-docker
+        name: hadolint
+        args: ['--failure-threshold', 'warning']
+        files: .*Dockerfile.*
+
   - repo: local
     hooks:
-      - id: npm-audit
-        name: NPM Security Audit
-        entry: bash -c 'pnpm audit --audit-level high || { echo "High severity vulnerabilities found. Please run pnpm audit fix."; exit 1; }'
+      # Docker Compose構文チェック（全フォルダ対象）
+      - id: docker-compose-check
+        name: docker-compose validate
+        entry: bash -c 'for file in "$@"; do docker compose -f "$file" config --quiet || exit 1; done'
         language: system
-        files: ^(package\.json|pnpm-lock\.yaml)$
-        pass_filenames: false
-        stages: [manual] # 手動実行のみ
+        files: .*docker-compose\.(yml|yaml)$
+        pass_filenames: true
+
+  # ================================================================
+  # 🏗️ オプション: Terraform品質チェック
+  # ================================================================
+  # プロジェクトでTerraformを使用する場合は以下のコメントを解除してください
+  #
+  # - repo: https://github.com/antonbabenko/pre-commit-terraform
+  #   rev: v1.96.2
+  #   hooks:
+  #     # Terraformコードのフォーマットチェック（全フォルダ対象）
+  #     - id: terraform_fmt
+  #       args: [--args=-recursive]
+  #
+  #     # Terraform設定の構文検証（全フォルダ対象）
+  #     - id: terraform_validate
+  #       args:
+  #         - --hook-config=--retry-once-with-cleanup=true
+  #         - --tf-init-args=-upgrade
+  #
+  #     # TFLint - Terraformのlintツール（全フォルダ対象）
+  #     - id: terraform_tflint
+  #       args:
+  #         - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+  #         - --args=--call-module-type=all
+  #
+  #     # Checkov - セキュリティとベストプラクティスチェック（全フォルダ対象）
+  #     - id: terraform_checkov
+  #       args:
+  #         - --args=--quiet
+  #         - --args=--framework=terraform
+  #         - --args=--skip-check=CKV_GCP_*
+  #         - --args=--compact
 
 # グローバル除外設定
 exclude: |
@@ -110,20 +166,7 @@ exclude: |
   )$
 
 # パフォーマンス設定
-default_install_hook_types: [pre-commit, commit-msg, pre-push]
+default_install_hook_types: [pre-commit]
 default_stages: [pre-commit]
 fail_fast: false
 minimum_pre_commit_version: 3.0.0
-
-# CI環境での設定
-ci:
-  autofix_commit_msg: |
-    [pre-commit.ci] auto fixes from pre-commit hooks
-
-    for more information, see https://pre-commit.ci
-  autofix_prs: true
-  autoupdate_branch: "main"
-  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
-  autoupdate_schedule: monthly
-  skip: []
-  submodules: false

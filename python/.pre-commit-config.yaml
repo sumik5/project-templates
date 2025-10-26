@@ -1,21 +1,61 @@
+# Pre-commit hooks for Python project
+# このファイルはPythonプロジェクトのコード品質を自動的にチェックします
+#
+# 🚀 セットアップ: mise run install
+# 🔍 手動実行: pre-commit run --all-files
+#
+# 💡 ディレクトリに依存しない設計:
+#   - どのディレクトリからcommitしても動作します
+
 repos:
+  # 汎用フック（プロジェクト全体）
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
+      # 末尾の空白を削除
       - id: trailing-whitespace
+
+      # ファイル末尾に改行を追加
       - id: end-of-file-fixer
+
+      # YAMLファイルの構文チェック
       - id: check-yaml
-      - id: check-added-large-files
+
+      # JSONファイルの構文チェック
       - id: check-json
+
+      # TOMLファイルの構文チェック
       - id: check-toml
 
+      # 大きなファイルの追加をチェック（1MB以上）
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+
+      # マージコンフリクトマーカーのチェック
+      - id: check-merge-conflict
+
+      # Python AST構文チェック
+      - id: check-ast
+
+      # 実行可能ファイルのシェバンをチェック
+      - id: check-executables-have-shebangs
+
+      # 混在した改行コードをチェック
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # Ruff - 高速なPythonリンター・フォーマッター
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.7.0
     hooks:
+      # Ruffリンター（自動修正付き）
       - id: ruff
         args: [--fix]
+
+      # Ruffフォーマッター
       - id: ruff-format
 
+  # mypy - Python型チェック
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.13.0
     hooks:
@@ -23,3 +63,50 @@ repos:
         files: ^src/
         additional_dependencies:
           - types-requests
+
+  # ================================================================
+  # 📦 Docker品質チェック
+  # ================================================================
+  # Dockerfileやdocker-compose.ymlの品質をチェック（全フォルダ対象）
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      # Hadolint - Dockerfileのlint（全フォルダ対象）
+      - id: hadolint-docker
+        name: hadolint
+        args: ['--failure-threshold', 'warning']
+        files: .*Dockerfile.*
+
+  - repo: local
+    hooks:
+      # Docker Compose構文チェック（全フォルダ対象）
+      - id: docker-compose-check
+        name: docker-compose validate
+        entry: bash -c 'for file in "$@"; do docker compose -f "$file" config --quiet || exit 1; done'
+        language: system
+        files: .*docker-compose\.(yml|yaml)$
+        pass_filenames: true
+
+# グローバル除外設定
+exclude: |
+  (?x)^(
+    __pycache__/.*|
+    \.venv/.*|
+    \.pytest_cache/.*|
+    \.ruff_cache/.*|
+    \.mypy_cache/.*|
+    build/.*|
+    dist/.*|
+    \.egg-info/.*|
+    htmlcov/.*|
+    \.coverage|
+    .*\.log|
+    \.git/.*
+  )$
+
+# パフォーマンス設定
+default_install_hook_types: [pre-commit]
+default_stages: [pre-commit]
+fail_fast: false
+minimum_pre_commit_version: 3.0.0

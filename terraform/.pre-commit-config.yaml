@@ -1,9 +1,111 @@
+# Pre-commit hooks for Terraform project
+# このファイルはTerraformプロジェクトのコード品質を自動的にチェックします
+#
+# 🚀 セットアップ: mise run install
+# 🔍 手動実行: pre-commit run --all-files
+#
+# 💡 ディレクトリに依存しない設計:
+#   - どのディレクトリからcommitしても動作します
+
 repos:
+  # Terraform用のフック
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.97.4
     hooks:
+      # Terraformコードのフォーマットチェック
       - id: terraform_fmt
+        args: [--args=-recursive]
+
+      # Terraform設定の構文検証
       - id: terraform_validate
+        args:
+          - --hook-config=--retry-once-with-cleanup=true
+          - --tf-init-args=-upgrade
+
+      # TFLint - Terraformのlintツール
       - id: terraform_tflint
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+          - --args=--call-module-type=all
+
+      # Trivy - セキュリティスキャナー
       - id: terraform_trivy
+        args:
+          - --args=--config=.trivyconfig.yaml
+          - --args=--ignorefile=.trivyignore
+
+      # Checkov - セキュリティとベストプラクティスチェック
+      # 必要に応じてコメントを解除
       #- id: terraform_checkov
+      #  args:
+      #    - --args=--quiet
+      #    - --args=--framework=terraform
+      #    - --args=--compact
+
+  # 汎用フック（プロジェクト全体）
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # 末尾の空白を削除
+      - id: trailing-whitespace
+        exclude: ^(.*\.md)$
+
+      # ファイル末尾に改行を追加
+      - id: end-of-file-fixer
+        exclude: ^(.*\.md)$
+
+      # YAMLファイルの構文チェック
+      - id: check-yaml
+
+      # JSONファイルの構文チェック
+      - id: check-json
+
+      # 大きなファイルの追加をチェック（1MB以上）
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+
+      # マージコンフリクトマーカーのチェック
+      - id: check-merge-conflict
+
+      # 実行可能ファイルのシェバンをチェック
+      - id: check-executables-have-shebangs
+
+  # ================================================================
+  # 📦 オプション: Docker品質チェック
+  # ================================================================
+  # プロジェクトでDockerを使用する場合は以下のコメントを解除してください
+  #
+  # - repo: https://github.com/hadolint/hadolint
+  #   rev: v2.12.0
+  #   hooks:
+  #     # Hadolint - Dockerfileのlint（全フォルダ対象）
+  #     - id: hadolint-docker
+  #       name: hadolint
+  #       args: ['--failure-threshold', 'warning']
+  #       files: .*Dockerfile.*
+  #
+  # - repo: local
+  #   hooks:
+  #     # Docker Compose構文チェック（全フォルダ対象）
+  #     - id: docker-compose-check
+  #       name: docker-compose validate
+  #       entry: bash -c 'for file in "$@"; do docker compose -f "$file" config --quiet || exit 1; done'
+  #       language: system
+  #       files: .*docker-compose\.(yml|yaml)$
+  #       pass_filenames: true
+
+# グローバル除外設定
+exclude: |
+  (?x)^(
+    \.terraform/.*|
+    \.terragrunt-cache/.*|
+    terraform\.tfstate.*|
+    \.tfvars|
+    .*\.log
+  )$
+
+# パフォーマンス設定
+default_install_hook_types: [pre-commit]
+default_stages: [pre-commit]
+fail_fast: false
+minimum_pre_commit_version: 3.0.0

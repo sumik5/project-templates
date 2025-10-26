@@ -2,15 +2,55 @@ name: Terraform Checks
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
+    branches: [main, develop]
 
 jobs:
-  terraform-checks:
+  pre-commit:
+    name: Pre-commit checks
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python for pre-commit
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.4.0
+
+      - name: Install mise
+        run: |
+          curl https://mise.run | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Setup mise tools
+        run: |
+          mise install
+          mise trust
+          echo "$(mise bin-paths)" >> $GITHUB_PATH
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Setup Docker for hadolint
+        run: docker pull hadolint/hadolint:v2.12.0
+
+      - name: Initialize Terraform
+        run: terraform init -backend=false
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files
+
+  terraform-checks:
+    name: Terraform validation
+    runs-on: ubuntu-latest
+    needs: pre-commit
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,15 +63,14 @@ jobs:
           curl https://mise.run | sh
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Setup mise
+      - name: Setup mise tools
         run: |
           mise install
           mise trust
           echo "$(mise bin-paths)" >> $GITHUB_PATH
-          echo "MISE_SHELL=zsh" >> $GITHUB_ENV
 
       - name: Initialize Terraform
-        run: mise exec terraform@1.13.2 -- terraform init -backend=false
+        run: terraform init -backend=false
 
       - name: Run all checks
         run: mise run all

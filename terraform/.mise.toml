@@ -1,3 +1,11 @@
+# mise configuration for Terraform project
+# mise は開発環境のツールバージョン管理とタスク実行を統一的に管理します
+#
+# 使い方:
+#   mise run help     - 利用可能なコマンド一覧を表示
+#   mise run install  - 初回セットアップ（依存関係とpre-commit hooks）
+#   mise run all      - すべてのチェックを実行
+
 [tools]
 terraform = "1.13.2"
 pre-commit = "latest"
@@ -7,30 +15,122 @@ trivy = "latest"
 [settings]
 experimental = true
 
-[tasks.setup]
-description = "Setup project"
-run = "mise install && pre-commit install"
+# =======================================================================
+# Project Setup
+# =======================================================================
+
+[tasks.install]
+description = "依存関係とGit hooksのインストール"
+alias = "setup"
+run = """
+#!/bin/bash
+echo "🚀 Setting up development environment..."
+# Install mise tools
+echo "📦 Installing tools..."
+mise install
+# Install pre-commit hooks
+echo "🪝 Installing pre-commit hooks..."
+pre-commit install
+echo "✅ Setup complete!"
+"""
+
+# =======================================================================
+# Code Quality Commands
+# =======================================================================
 
 [tasks.all]
-description = "Execute all checks"
-depends = ["format", "validate","tflint", "trivy-fs", "trivy-config"]
+description = "すべてのチェックを実行（format, validate, tflint, trivy）"
+depends = ["format", "validate", "tflint", "trivy-fs", "trivy-config"]
+
+[tasks.check-all]
+description = "すべてのチェックを実行 via pre-commit"
+run = "pre-commit run --all-files"
 
 [tasks.format]
-description = "Format project"
+description = "Terraformコードをフォーマット"
 run = "terraform fmt -check -recursive ."
 
+[tasks."format:fix"]
+description = "Terraformコードをフォーマット（修正）"
+run = "terraform fmt -recursive ."
+
 [tasks.validate]
-description = "Validate project"
+description = "Terraform設定を検証"
 run = "terraform validate"
 
 [tasks.tflint]
-description = "Test tflint"
+description = "TFLintを実行"
 run = "tflint --init && tflint --recursive"
 
 [tasks.trivy-fs]
-description = "Test trivy filesystem"
+description = "Trivyファイルシステムスキャンを実行"
 run = "trivy fs . -c .trivyconfig.yaml --ignorefile .trivyignore"
 
 [tasks.trivy-config]
-description = "Test trivy config"
+description = "Trivy設定スキャンを実行"
 run = "trivy config . -c .trivyconfig.yaml -s MEDIUM --ignorefile .trivyignore"
+
+# =======================================================================
+# pre-commit Commands
+# =======================================================================
+
+[tasks.pre-commit]
+description = "pre-commitチェックを手動実行"
+run = "pre-commit run --all-files"
+
+[tasks.pre-commit-update]
+description = "pre-commitフックを最新バージョンに更新"
+run = "pre-commit autoupdate"
+
+[tasks.pre-commit-uninstall]
+description = "pre-commitフックをアンインストール"
+run = """
+#!/bin/bash
+echo "🗑️ Uninstalling pre-commit hooks..."
+pre-commit uninstall
+pre-commit uninstall --hook-type commit-msg
+echo "✅ Pre-commit hooks uninstalled!"
+"""
+
+[tasks.pre-commit-clean]
+description = "pre-commitを完全削除（フックとキャッシュ）"
+run = """
+#!/bin/bash
+echo "🧹 Completely removing pre-commit..."
+# Uninstall hooks
+pre-commit uninstall 2>/dev/null || true
+pre-commit uninstall --hook-type commit-msg 2>/dev/null || true
+pre-commit uninstall --hook-type pre-push 2>/dev/null || true
+# Remove cache
+rm -rf ~/.cache/pre-commit 2>/dev/null || true
+echo "✅ Pre-commit cache removed!"
+"""
+
+# =======================================================================
+# Terraform Commands
+# =======================================================================
+
+[tasks.init]
+description = "Terraformを初期化"
+run = "terraform init"
+
+[tasks.plan]
+description = "Terraform planを実行"
+run = "terraform plan"
+
+[tasks.apply]
+description = "Terraform applyを実行"
+run = "terraform apply"
+
+[tasks.destroy]
+description = "Terraform destroyを実行"
+run = "terraform destroy"
+
+[tasks.clean]
+description = "Terraformキャッシュをクリーンアップ"
+run = """
+rm -rf .terraform/
+rm -rf .terragrunt-cache/
+rm -f terraform.tfstate*
+rm -f .terraform.lock.hcl
+"""

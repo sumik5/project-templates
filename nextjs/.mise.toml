@@ -1,12 +1,21 @@
+# mise configuration for Next.js project
+# mise は開発環境のツールバージョン管理とタスク実行を統一的に管理します
+#
+# 使い方:
+#   mise run help     - 利用可能なコマンド一覧を表示
+#   mise run install  - 初回セットアップ（依存関係とpre-commit hooks）
+#   mise run dev      - 開発サーバー起動
+
 [env]
 
 [tasks.help]
-description = "Show all available commands"
+description = "利用可能なコマンド一覧を表示"
 run = "mise tasks"
 
 # ==================== Setup Commands ====================
-[tasks.setup]
-description = "Setup development environment"
+[tasks.install]
+description = "依存関係とGit hooksのインストール"
+alias = "setup"
 run = """
 #!/bin/bash
 echo "🚀 Setting up development environment..."
@@ -19,32 +28,15 @@ pnpm install
 echo "🔧 Setting up environment files..."
 cp -n .env.example .env.local 2>/dev/null || true
 
-# Install pre-commit
-echo "🪝 Installing pre-commit..."
-if ! command -v pre-commit &> /dev/null; then
-    echo "Installing pre-commit via pip..."
-    pip install pre-commit || pip3 install pre-commit || {
-        echo "⚠️  Please install pre-commit manually: https://pre-commit.com/#install"
-        echo "    brew install pre-commit (macOS)"
-        echo "    pip install pre-commit (Python)"
-    }
-fi
-
-# Setup pre-commit hooks
-if command -v pre-commit &> /dev/null; then
-    echo "🔗 Installing git hooks..."
-    pre-commit install
-    pre-commit install --hook-type commit-msg
-    echo "✅ Pre-commit hooks installed!"
-else
-    echo "⚠️  Pre-commit not found. Skipping hook installation."
-fi
+# Install pre-commit hooks
+echo "🪝 Installing pre-commit hooks..."
+pre-commit install
 
 echo "✅ Setup complete! Run 'mise run dev' to start"
 """
 
 [tasks.clean-setup]
-description = "Clean setup (remove node_modules and reinstall)"
+description = "クリーンセットアップ（node_modules削除して再インストール）"
 run = """
 #!/bin/bash
 echo "🧹 Cleaning and reinstalling..."
@@ -55,19 +47,19 @@ echo "✅ Clean setup complete!"
 
 # ==================== Development Commands ====================
 [tasks.dev]
-description = "Start development server"
+description = "開発サーバーを起動"
 run = "pnpm dev"
 
 [tasks.build]
-description = "Build for production"
+description = "本番用ビルド"
 run = "pnpm build"
 
 [tasks.start]
-description = "Start production server"
+description = "本番サーバーを起動"
 run = "pnpm start"
 
 [tasks.preview]
-description = "Preview production build"
+description = "本番ビルドをプレビュー"
 run = """
 #!/bin/bash
 pnpm build && pnpm start
@@ -75,23 +67,23 @@ pnpm build && pnpm start
 
 # ==================== Testing Commands ====================
 [tasks.test]
-description = "Run tests"
+description = "テストを実行"
 run = "pnpm test"
 
 [tasks.test-watch]
-description = "Run tests in watch mode"
+description = "テストをwatchモードで実行"
 run = "pnpm test --watch"
 
 [tasks.test-ui]
-description = "Run tests with UI"
+description = "テストUIを起動"
 run = "pnpm test:ui"
 
 [tasks.test-coverage]
-description = "Run tests with coverage"
+description = "カバレッジ付きでテストを実行"
 run = "pnpm coverage"
 
 [tasks.test-all]
-description = "Run all tests with coverage"
+description = "すべてのテストをカバレッジ付きで実行"
 run = """
 #!/bin/bash
 echo "🧪 Running all tests..."
@@ -102,106 +94,60 @@ echo "✅ All tests complete!"
 
 # ==================== Code Quality Commands ====================
 [tasks.lint]
-description = "Run ESLint"
+description = "ESLintを実行"
 run = "pnpm lint"
 
 [tasks.lint-fix]
-description = "Run ESLint with auto-fix"
+description = "ESLintで自動修正"
 run = "pnpm lint --fix"
 
 [tasks.format]
-description = "Format code with Prettier"
+description = "Prettierでコードをフォーマット"
 run = "pnpm prettier --write ."
 
 [tasks.type-check]
-description = "Run TypeScript type checking"
+description = "TypeScript型チェックを実行"
 run = "pnpm tsc --noEmit"
 
 [tasks.check-all]
-description = "Execute all checks"
-run = [
-  "pnpm lint --fix",
-  "pnpm prettier --write .",
-  "pnpm tsc --noEmit"
-]
+description = "すべてのチェックを実行 via pre-commit"
+run = "pre-commit run --all-files"
 
 # ==================== pre-commit Commands ====================
 
 [tasks.pre-commit]
-description = "Run pre-commit checks manually"
-run = """
-#!/bin/bash
-echo "🔍 Running pre-commit checks..."
-if command -v pre-commit &> /dev/null; then
-    pre-commit run --all-files
-else
-    echo "⚠️  pre-commit not installed. Running fallback checks..."
-    pnpm type-check
-    pnpm lint
-    pnpm test --run
-fi
-echo "✅ Pre-commit checks passed!"
-"""
-
-[tasks.pre-commit-install]
-description = "Install pre-commit hooks"
-run = """
-#!/bin/bash
-echo "🪝 Installing pre-commit..."
-if ! command -v pre-commit &> /dev/null; then
-    echo "Installing pre-commit..."
-    pip install pre-commit || pip3 install pre-commit || brew install pre-commit || {
-        echo "❌ Failed to install pre-commit automatically."
-        echo "Please install manually:"
-        echo "  macOS: brew install pre-commit"
-        echo "  Python: pip install pre-commit"
-        echo "  Ubuntu: apt install pre-commit"
-        exit 1
-    }
-fi
-pre-commit install
-pre-commit install --hook-type commit-msg
-echo "✅ Pre-commit hooks installed!"
-"""
+description = "pre-commitチェックを手動実行"
+run = "pre-commit run --all-files"
 
 [tasks.pre-commit-update]
-description = "Update pre-commit hooks to latest versions"
+description = "pre-commitフックを最新バージョンに更新"
 run = "pre-commit autoupdate"
 
 [tasks.pre-commit-uninstall]
-description = "Uninstall pre-commit hooks"
+description = "pre-commitフックをアンインストール"
 run = """
 #!/bin/bash
 echo "🗑️ Uninstalling pre-commit hooks..."
-if command -v pre-commit &> /dev/null; then
-    pre-commit uninstall
-    pre-commit uninstall --hook-type commit-msg
-    pre-commit uninstall --hook-type pre-push
-    echo "✅ Pre-commit hooks uninstalled!"
-else
-    echo "⚠️  pre-commit is not installed."
-fi
+pre-commit uninstall
+pre-commit uninstall --hook-type commit-msg
+echo "✅ Pre-commit hooks uninstalled!"
 """
 
 [tasks.pre-commit-clean]
-description = "Completely remove pre-commit (hooks and cache)"
+description = "pre-commitを完全削除（フックとキャッシュ）"
 run = """
 #!/bin/bash
 echo "🧹 Completely removing pre-commit..."
 # Uninstall hooks
-if command -v pre-commit &> /dev/null; then
-    pre-commit uninstall 2>/dev/null || true
-    pre-commit uninstall --hook-type commit-msg 2>/dev/null || true
-    pre-commit uninstall --hook-type pre-push 2>/dev/null || true
-fi
+pre-commit uninstall 2>/dev/null || true
+pre-commit uninstall --hook-type commit-msg 2>/dev/null || true
+pre-commit uninstall --hook-type pre-push 2>/dev/null || true
 # Remove cache
 rm -rf ~/.cache/pre-commit 2>/dev/null || true
-# Remove config file
-rm -f .pre-commit-config.yaml 2>/dev/null || true
-echo "✅ Pre-commit completely removed!"
+echo "✅ Pre-commit cache removed!"
 """
 
 # ==================== Bundle Analysis ====================
 [tasks.analyze]
-description = "Analyze bundle size"
+description = "バンドルサイズを分析"
 run = "ANALYZE=true pnpm build"
